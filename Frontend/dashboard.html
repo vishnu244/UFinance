@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dashboard - uFinance</title>
+    <style>
+        body { display: flex; justify-content: center; align-items: center; height: 100vh; background: #121212; color: white; font-family: Arial, sans-serif; }
+        .container { text-align: center; }
+        a { text-decoration: none; color: white; background: #FF8C42; padding: 10px 20px; border-radius: 5px; display: inline-block; margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Welcome, {{ user_data.name }}</h1>
+        <p>Email: {{ username }}</p>
+        <p>University: {{ user_data.university }}</p>
+        <a href="{{ url_for('logout') }}">Logout</a>
+    </div>
+</body>
+</html>

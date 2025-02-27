@@ -1,0 +1,139 @@
+from flask import Flask, request, redirect, session
+
+app = Flask(__name__)
+app.secret_key = "secret"
+
+# Store users with more details
+users = {}
+
+HTML_TEMPLATE = """
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{title}</title>
+    <style>
+        body {{
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #2A1E36;
+            font-family: Arial, sans-serif;
+        }}
+        .iphone {{
+            width: 320px;
+            height: 667px;
+            border: 16px solid black;
+            border-radius: 40px;
+            background: white;
+            padding: 20px;
+            text-align: center;
+            position: relative;
+            box-shadow: 0px 4px 10px rgba(0,0,0,0.2);
+        }}
+        .notch {{
+            width: 40%;
+            height: 30px;
+            background: black;
+            position: absolute;
+            top: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-bottom-left-radius: 15px;
+            border-bottom-right-radius: 15px;
+        }}
+        a, input[type='submit'] {{
+            display: block;
+            margin-top: 10px;
+        }}
+    </style>
+</head>
+<body>
+    <div class="iphone">
+        <div class="notch"></div>
+        <h2>{title}</h2>
+        {content}
+    </div>
+</body>
+</html>
+"""
+
+@app.route('/')
+def home():
+    if "user" in session:
+        return HTML_TEMPLATE.format(title="Home", content=f"Hello {session['user']}!<br><a href='/dashboard'>Go to Dashboard</a> | <a href='/logout'>Logout</a>")
+    return HTML_TEMPLATE.format(title="Home", content="<a href='/register'>Register</a> | <a href='/login'>Login</a>")
+
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    if request.method == 'POST':
+        name = request.form['username']
+        pwd = request.form['password']
+        age = request.form['age']
+        email = request.form['email']
+        address = request.form['address']
+        sex = request.form['sex']
+        if name in users:
+            return HTML_TEMPLATE.format(title="Register", content="User already exists! <a href='/register'>Try again</a>")
+        users[name] = {"password": pwd, "age": age, "email": email, "address": address, "sex": sex}
+        print(f"New user registered: Username: {name}, Password: {pwd}, Age: {age}, Email: {email}, Address: {address}, Sex: {sex}")
+        return redirect('/login')
+    return HTML_TEMPLATE.format(title="Register", content="""
+    <form method='post'>
+        Username: <input type='text' name='username'><br>
+        Password: <input type='password' name='password'><br>
+        Age: <input type='text' name='age'><br>
+        Email: <input type='text' name='email'><br>
+        Home Address: <input type='text' name='address'><br>
+        Sex: <input type='text' name='sex'><br>
+        <input type='submit' value='Sign Up'>
+    </form>
+    """)
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        name = request.form['username']
+        pwd = request.form['password']
+        if name in users and users[name]["password"] == pwd:
+            session['user'] = name
+            return redirect('/dashboard')
+        return HTML_TEMPLATE.format(title="Login", content="Incorrect login! <a href='/login'>Try again</a>")
+    return HTML_TEMPLATE.format(title="Login", content="""
+    <form method='post'>
+        Username: <input type='text' name='username'><br>
+        Password: <input type='password' name='password'><br>
+        <input type='submit' value='Login'>
+    </form>
+    """)
+
+@app.route('/dashboard')
+def dashboard():
+    if "user" not in session:
+        return redirect('/login')
+    user_data = users[session['user']]
+    return HTML_TEMPLATE.format(title="Dashboard", content=f"Welcome {session['user']}<br>Age: {user_data['age']}<br>Email: {user_data['email']}<br>Address: {user_data['address']}<br>Sex: {user_data['sex']}<br>Password: {user_data['password']}<br><a href='/page1'>Page 1</a> | <a href='/page2'>Page 2</a> | <a href='/delete'>Delete Account</a> | <a href='/logout'>Logout</a>")
+
+@app.route('/delete', methods=['GET', 'POST'])
+def delete_account():
+    if "user" in session:
+        if request.method == 'POST':
+            print(f"User {session['user']} deleted their account.")
+            del users[session['user']]
+            session.pop("user", None)
+            return redirect('/')
+        return HTML_TEMPLATE.format(title="Delete Account", content="""
+        <form method='post'>
+            <p>Are you sure you want to delete your account?</p>
+            <input type='submit' value='Delete'>
+        </form>
+        """)
+    return redirect('/')
+
+@app.route('/logout')
+def logout():
+    session.pop("user", None)
+    return redirect('/')
+
+if __name__ == '__main__':
+    app.run(debug=True)
