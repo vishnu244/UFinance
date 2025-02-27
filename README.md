@@ -51,3 +51,5 @@ Students often struggle with managing their finances efficiently due to a lack o
 Full project Google Drive Link: https://drive.google.com/file/d/1LmVCQPQ3BfCCPfjyLzBeWSteKUj2ednr/view?usp=sharing
 
 Link to Demo Video: https://www.loom.com/share/fefb55d47d1f4bd29e761758e8e4e7ac?sid=8348ff9c-01e4-442c-a8ff-57565aa1aef8
+
+Figma Link: https://www.figma.com/proto/Ln9vK39DZ76zejV1MBqZLc/Student-Finance-App?node-id=100-562&t=nXlk6SHKodqp8tAO-1&scaling=scale-down&content-scaling=fixed&page-id=0%3A1&starting-point-node-id=12%3A673
